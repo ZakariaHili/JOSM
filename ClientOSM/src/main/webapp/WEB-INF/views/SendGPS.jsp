@@ -112,7 +112,7 @@ body {
 				lon=<%=lon%>
                 map = L.map('map', {
                     layers: MQ.mapLayer(),    
-                    center: [lat, lon],
+                    center: [lati, lon],
                     zoom: 15
                 });
                 var icon = L.icon({

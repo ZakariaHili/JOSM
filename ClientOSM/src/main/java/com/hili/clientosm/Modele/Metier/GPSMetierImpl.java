@@ -20,11 +20,12 @@ public class GPSMetierImpl implements  GPSMetier {
 
 
 	private static int countfailed;
-	final static int maxAcceptFailed=3;
-
+	public static int maxAcceptFailed=3;
+	private static boolean noRoute;
 
 	public GPSMetierImpl(){
 		countfailed =3;
+		noRoute=false;
 	}
 
 	//Convert GPS Coordinates TO String
@@ -33,39 +34,47 @@ public class GPSMetierImpl implements  GPSMetier {
 		try {
 
 			JSONObject position = new JSONObject();
-			
+
 			if(jsonEntitie.getPositions().size()>jsonEntitie.getVitesse()&&counter<jsonEntitie.getPositions().size()){
-				
+
 				position.put("lat", Double.valueOf(jsonEntitie.getPositions().get(counter)[0]));
 				position.put("lon", Double.valueOf(jsonEntitie.getPositions().get(counter)[1]));	
-				
+
 			}
 			else if(counter>jsonEntitie.getPositions().size()-1){
 				position.put("lat", Double.valueOf(jsonEntitie.getPositions().get(jsonEntitie.getPositions().size()-1)[0]));
 				position.put("lon", Double.valueOf(jsonEntitie.getPositions().get(jsonEntitie.getPositions().size()-1)[1]));
-				
+
 			}
 			else{
 				position.put("lat", Double.valueOf(jsonEntitie.getPositions().get(0)[0]));
 				position.put("lon", Double.valueOf(jsonEntitie.getPositions().get(0)[1]));
 			}
 			JSONObject client = new JSONObject();
-			
-			
+
+
 			JSONObject json = new JSONObject();
 			json.put("isServer", jsonEntitie.isServer());
 			json.put("client", client);
 			client.put("ID", jsonEntitie.getId());
 			client.put("Position", position);
-			
-			
+
+
 			return json.toString();
 		}catch (Exception e){
 			System.out.println("Ouups : createJSON"+ e.toString());
 			return null;
 		}
 	}
+	
 
+	public static boolean isNoRoute() {
+		return noRoute;
+	}
+
+	public static void setNoRoute(boolean noRoute) {
+		GPSMetierImpl.noRoute = noRoute;
+	}
 
 	@Override
 	public JSONEntitie createJSON(String Id, LinkedList<String[]>positions, boolean isServer) {
@@ -85,34 +94,34 @@ public class GPSMetierImpl implements  GPSMetier {
 				System.out.println(codeResponse);
 				return 0;}
 			else
-			if (codeResponse == 303) {
-				JSONArray jsonArray = jsonRootObject.optJSONArray("servers");
-				JSONObject jsonObject;
+				if (codeResponse == 303) {
+					JSONArray jsonArray = jsonRootObject.optJSONArray("servers");
+					JSONObject jsonObject;
 
-				for (int i = 0; i < jsonArray.length(); i++) {
-					jsonObject = jsonArray.getJSONObject(i);
-					server=jsonObject.optString("IP").toString();
-					if(i==0)
-						jsonEntitie.setDefaultserver(server);
+					for (int i = 0; i < jsonArray.length(); i++) {
+						jsonObject = jsonArray.getJSONObject(i);
+						server=jsonObject.optString("IP").toString();
+						if(i==0)
+							jsonEntitie.setDefaultserver(server);
 
-					if(jsonEntitie.isServerIn(server)==false){
-						jsonEntitie.addServer(server);
+						if(jsonEntitie.isServerIn(server)==false){
+							jsonEntitie.addServer(server);
+						}
+
 					}
-
+					return 1;
 				}
-				return 1;
-			}
-			else if(codeResponse==404) {
-				if(countfailed>0){
-					countfailed--;}
-				else{
-					if(jsonEntitie.getServers().size()>1){
-						jsonEntitie.removeServer(jsonEntitie.getDefaultserver());
-						jsonEntitie.newDefaultServer();
-						countfailed=maxAcceptFailed;
+				else if(codeResponse==404) {
+					if(countfailed>0){
+						countfailed--;}
+					else{
+						if(jsonEntitie.getServers().size()>1){
+							jsonEntitie.removeServer(jsonEntitie.getDefaultserver());
+							jsonEntitie.newDefaultServer();
+							countfailed=maxAcceptFailed;
+						}
 					}
 				}
-			}
 
 		}
 		catch (Exception e){
@@ -127,29 +136,32 @@ public class GPSMetierImpl implements  GPSMetier {
 	@Override
 	public LinkedList<String[]> jsontoLinkedList(String jsonString) {
 		try {
-			
+
 
 			LinkedList <String[]> list = new LinkedList<String[]>();
 
 			jsonString= jsonString.substring(24, jsonString.length()-2);
-
+			//System.out.println(jsonString);
 
 			JSONObject jsonRootObject = new JSONObject(jsonString);
 			JSONObject route = jsonRootObject.optJSONObject("route");
 			try{
-			JSONObject shape = route.getJSONObject("shape");
+				JSONObject shape = route.getJSONObject("shape");
 
-			JSONArray shapePoints=shape.getJSONArray("shapePoints");
+				JSONArray shapePoints=shape.getJSONArray("shapePoints");
 
-			for (int i = 0; i < shapePoints.length(); i++) {
-				
-				
-				list.add(new String[]{shapePoints.get(i).toString(),shapePoints.get(i+1).toString()});
-				i++;
-			}
+				for (int i = 0; i < shapePoints.length(); i++) {
+
+
+					list.add(new String[]{shapePoints.get(i).toString(),shapePoints.get(i+1).toString()});
+					i++;
+				}
+				noRoute=false;
 			}catch(Exception e){
 				HttpServicesImpl.setErrorCodeMapQuest(404);
 				System.out.println("JSONObject[shape] not found. => No Route found");
+				noRoute=true;	
+
 			}
 			return list;
 
@@ -161,6 +173,78 @@ public class GPSMetierImpl implements  GPSMetier {
 		return null;
 	}
 
+
+
+
+
+	@Override
+	public LinkedList<String[]> jsontoLinkedListGoogle(String jsonString) {
+		try {
+
+
+			LinkedList <String[]> list = new LinkedList<String[]>();
+
+			//jsonString= jsonString.substring(24, jsonString.length()-2);
+
+
+			JSONObject jsonRootObject = new JSONObject(jsonString);
+			//JSONObject route = jsonRootObject.getJSONObject("routes");
+			JSONArray routes = jsonRootObject.getJSONArray("routes");
+
+			for(int i=0;i<routes.length();i++){
+				if(routes.get(i)!=null){
+					JSONObject route = (JSONObject) routes.get(i);
+
+					if (route.get("legs")!=null){
+
+						JSONArray legs = route.getJSONArray("legs");
+
+						JSONObject legsE =  (JSONObject) legs.get(0);
+
+						JSONArray steps =legsE.getJSONArray("steps");
+						
+						if(steps!=null){
+							for(int j=0;j<steps.length();j++){
+								JSONObject step =  (JSONObject) steps.get(j);
+
+								if(step!=null){
+									JSONObject start_location =  (JSONObject) step.get("start_location");
+									
+									list.add(new String[] {start_location.get("lat").toString(),start_location.get("lng").toString()});
+									if(j==steps.length()-1)
+									{
+										JSONObject end_location =  (JSONObject) step.get("end_location");
+
+										list.add(new String[] {end_location.get("lat").toString(),end_location.get("lng").toString()});
+
+									}
+								}
+							}
+
+						}
+
+					}
+				}}
+			return list;
+			}
+		catch(Exception e){
+			HttpServicesImpl.setErrorCodeMapQuest(404);
+			System.out.println("JSONObject[shape] not found. => No Route found");
+			noRoute=false;	
+			return null;
+			
+		}
+
+
+		
+		
+
+
+
+
+
+	}
+
 	// Generate Link for API
 	@Override
 	public String makeLinkForRoutes(String lat1, String lon1, String lat2, String lon2) {
@@ -169,10 +253,18 @@ public class GPSMetierImpl implements  GPSMetier {
 				+ "renderAdvancedNarrative&ambiguities=ignore&avoidTimedConditions=false&doReverseGeocode=true&o"
 				+ "utFormat=json&routeType=fastest&timeType=1&enhancedNarrative=true&shapeFormat=raw&generalize=0&"
 				+ "locale=fr_FR&unit=k&from="+lat1+","+lon1+"&to="+lat2+","+lon2;
-		return s.replace(" ", "%");
+		return s.replace(" ", "");
 
 	}
+	@Override
+	public String makeLinkForRoutesGoogle(String lat1, String lon1, String lat2, String lon2) {
 
+		String s= "https://maps.googleapis.com/maps/api/directions/json?origin="
+				+ lat1+","+lon1+"&destination="+ lat2+","+lon2
+				+ "&key=AIzaSyC3d0hChbCJJbsM1MHzAGp4FgcDgfslqfg";
+		return s.replace(" ", "");
+
+	}
 	@Override
 	public String getMacAddress() {
 		InetAddress ip;

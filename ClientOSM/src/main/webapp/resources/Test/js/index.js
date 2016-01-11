@@ -17,46 +17,51 @@ $(document).ready(function() {
     $ripple.css({top: y, left: x});
     elem.append($ripple);
   };
-  
-  $(document).on("click", ".submit_", function(e) {
-    if (animating) return;
-    animating = true;
-    var that = this;
-    ripple($(that), e);
-    $(that).addClass("processing");
-    setTimeout(function() {
-      $(that).addClass("success");
-      setTimeout(function() {
-        $app.show();
-        $app.css("top");
-        $app.addClass("active");
-      }, submitPhase2 - 70);
-      setTimeout(function() {
-        $login.hide();
-        $login.addClass("inactive");
-        animating = false;
-        $(that).removeClass("success processing");
-      }, submitPhase2);
-    }, submitPhase1);
-  });
-  
-  $(document).on("click", ".app__logout", function(e) {
-    if (animating) return;
-    $(".ripple").remove();
-    animating = true;
-    var that = this;
-    $(that).addClass("clicked");
-    setTimeout(function() {
-      $app.removeClass("active");
-      $login.show();
-      $login.css("top");
-      $login.removeClass("inactive");
-    }, logoutPhase1 - 120);
-    setTimeout(function() {
-      $app.hide();
-      animating = false;
-      $(that).removeClass("clicked");
-    }, logoutPhase1);
-  });
+  $("form").submit(function(e){
+		 e.preventDefault();
+		 $(".submit_").click();
+		 return false;
+	  }); 
+	
+	  $(document).on("click", ".submit_", function(e) {
+	    if (animating) return;
+	    animating = true;
+	    var that = this;
+	    ripple($(that), e);
+	    $(that).addClass("processing");
+	    setTimeout(function() {
+	    	var regex = /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/;
+	    	if ($("input#default_server").val()=="" || regex.test($("input#default_server").val())==false ){
+	    		$(that).removeClass("processing");
+	    		$("input#default_server").parent().addClass("error").find("#default_server").change(function(){
+	    			$("input#default_server").parent().removeClass("error");
+	    			animating = false;
+	    		});
+	    		return;
+	    	}
+	    	
+	    	$.post("/Config",{
+	    		defaultserver:$("input#default_server").val(),
+	    	},function(data){
+	    		if (data.code==0){
+	    			$(that).addClass("success");
+	    		      setTimeout(function() {
+	    		        $app.show();
+	    		        $app.css("top");
+	    		        $app.addClass("active");
+	    		      }, submitPhase2 - 70);
+	    		      setTimeout(function() {
+	    		        $login.hide();
+	    		        $login.addClass("inactive");
+	    		        animating = false;
+	    		        $(that).removeClass("success processing");
+	    		      }, submitPhase2);		
+	    		}
+	    	},"json");
+	      
+	    }, submitPhase1);
+	  });
   
 });
+
+

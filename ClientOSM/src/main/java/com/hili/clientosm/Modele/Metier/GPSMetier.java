@@ -14,5 +14,7 @@ public interface GPSMetier {
     int stringToJSON(JSONEntitie jsonEntitie,String jsonString, int codeResponse);
     LinkedList<String[]> jsontoLinkedList(String jsonString);
     String makeLinkForRoutes(String lat1,String lon1,String lat2,String lon2);
+    String makeLinkForRoutesGoogle(String lat1, String lon1, String lat2, String lon2);
+    LinkedList<String[]> jsontoLinkedListGoogle(String jsonString);
     String getMacAddress();
 }

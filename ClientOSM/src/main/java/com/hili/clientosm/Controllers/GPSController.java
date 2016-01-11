@@ -3,12 +3,19 @@ package com.hili.clientosm.Controllers;
 
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +31,7 @@ import com.hili.clientosm.Services.HttprequestThread;
 @Controller
 public class GPSController {
 
-	public static String defaultServer="172.20.0.45";//172.20.0.69";//192.168.23.123"; //10.42.0.71";//"https://httpbin.org/post";
+	public static String defaultServer="172.20.11.11";//172.20.0.69";//192.168.23.123"; //10.42.0.71";//"https://httpbin.org/post";
 	private GPSMetierImpl gps ;
 	
 	private HttprequestThread httprequest ;
@@ -73,8 +80,16 @@ public class GPSController {
 		positions.clear();
 		try{
 		positions=httprequest.getHttpServices().sendGetHttpRequest(url);
+		if(gps.isNoRoute()==true){
+			 url=gps.makeLinkForRoutesGoogle(request.getParameter("lat1"),
+					request.getParameter("lon1"),request.getParameter("lat2"), 
+					request.getParameter("lon2"));
+		System.out.println(url);
+			 positions=httprequest.getHttpServices().sendGetHttpRequestGoogle(url);	
+		}
 		}catch(Exception e){
-			System.out.println("Can't generate positions: line 75 in Controller MakeRoute");
+			System.out.println("Can't generate positions using MapQuest: line 75 in Controller MakeRoute");
+			positions=httprequest.getHttpServices().sendGetHttpRequestGoogle(url);	
 		}
 		httprequest.getHttpServices().setCounter(0);
 		
@@ -114,9 +129,8 @@ public class GPSController {
 		
 			httprequest.start();
 		}catch (Exception e){
-			System.out.println("MakeRoute");
+			System.out.println("MakeRoute "+e.toString() );
 		}
-
 		
 		
 		
@@ -167,7 +181,32 @@ public class GPSController {
 
 		return "MyRoute";
 	}
-
+	@RequestMapping(value = "/Config", method = RequestMethod.GET)
+	public String DefaultServer(Locale locale, Model model,HttpServletRequest request)  {
+		
+		return "defaultServer";
+	}
+//	@RequestMapping(value = "/Config", method = RequestMethod.POST)
+//	public void config(Locale locale, Model model,HttpServletRequest request)  {
+//		this.defaultServer=request.getParameter("defaultserver");
+//		System.out.println(request.getParameter("defaultserver"));
+//		
+//	}
+	@RequestMapping(value = "/Config",method=RequestMethod.POST)
+	@ResponseBody
+    public String setConfig(HttpServletRequest request, 
+    		HttpServletResponse response) throws IOException{
+        //System.out.println(defaultserver);
+        //model.addAttribute("productBean", productBean);
+		JSONObject jsonResponse = new JSONObject();
+		jsonResponse.put("code", 0);
+		request.setCharacterEncoding("utf8");
+		response.setContentType("application/json");
+		this.defaultServer=request.getParameter("defaultserver");
+        return jsonResponse.toJSONString();
+    }
+	
+	
 	@RequestMapping(value = "/getNewPosition", method = RequestMethod.GET)
 	public @ResponseBody
 	String getNewPosition() {

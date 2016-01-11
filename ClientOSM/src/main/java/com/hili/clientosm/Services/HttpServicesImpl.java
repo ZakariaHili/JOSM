@@ -91,7 +91,7 @@ public class HttpServicesImpl  implements HttpServices {
 			if(jsonEntitie.getDefaultserver().isEmpty())
 				obj= new URL("http://"+url+":8080/SendGPS");
 			else obj= new URL("http://"+jsonEntitie.getDefaultserver()+":8080/SendGPS");
-		//	obj= new URL(url);
+//			obj= new URL(url);
 			//obj= new URL(url);
 
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -129,7 +129,7 @@ public class HttpServicesImpl  implements HttpServices {
 				while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);
 				}
-				System.out.println("  Response  : "+ response.toString());
+			//	System.out.println("  Response  : "+ response.toString());
 				in.close();         
 
 
@@ -194,6 +194,50 @@ public class HttpServicesImpl  implements HttpServices {
 			//System.out.print(" error sendHttpGetRequest"+ e.toString()+"\n");
 			//e.getStackTrace();
 			System.out.println("  Can not connect Mapquest (check your proxy) ");
+		}
+		return null;
+	}
+
+	@Override
+	public LinkedList<String[]> sendGetHttpRequestGoogle(String url)  {
+
+		try {
+			final URL obj;
+			
+			
+
+			obj= new URL(url);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			//add reuqest header
+			con.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(con.getInputStream()));
+			String inputLine;
+
+			StringBuffer response = new StringBuffer();
+			 errorCodeMapQuest = con.getResponseCode();
+			
+			if(errorCodeMapQuest==200){
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				con.disconnect();
+				//System.out.println(response.toString());
+				return gpsMetier.jsontoLinkedListGoogle(response.toString());
+			}
+			else
+				con.disconnect();
+
+			return new LinkedList<String[]>();
+		}catch (Exception e){
+
+			//System.out.print(" error sendHttpGetRequest"+ e.toString()+"\n");
+			//e.getStackTrace();
+			System.out.println("  Can not connect GoogleAPI (check your proxy) ");
 		}
 		return null;
 	}

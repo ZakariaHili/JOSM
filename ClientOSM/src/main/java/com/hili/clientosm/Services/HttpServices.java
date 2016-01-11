@@ -12,4 +12,5 @@ public interface HttpServices {
 
     void sendPostHttpRequest(JSONEntitie jsonEntitie,String url) throws IOException;
     LinkedList<String[]> sendGetHttpRequest(String url) throws IOException;
+    public LinkedList<String[]> sendGetHttpRequestGoogle(String url);
 }
