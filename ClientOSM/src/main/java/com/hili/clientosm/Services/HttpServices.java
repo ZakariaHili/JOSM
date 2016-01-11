@@ -1,10 +1,9 @@
 package com.hili.clientosm.Services;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
-import com.hili.clientosm.Entities.JSONEntitie;
+import com.hili.clientosm.Modele.Entities.JSONEntitie;
 
 /**
  * Created by HILI on 05/11/2015.

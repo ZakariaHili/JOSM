@@ -8,63 +8,129 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title>Ma Position</title>
-<style media="screen" type="text/css">
+<link rel="stylesheet"
+	href="<c:url value='/resources/leaflet.css'/>" />
 
-.row{
-  margin-top: 10%;
-  margin-bottom: 30px
+<script
+	src="<c:url value='/resources/leaflet.js'/>"></script>
+<script
+	src="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-map.js?key=Kmjtd%7Cluua2qu7n9%2C7a%3Do5-lzbgq"></script>
+<script
+	src="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-routing.js?key=Kmjtd%7Cluua2qu7n9%2C7a%3Do5-lzbgq"></script>
+
+
+<style type="">
+#map>div.leaflet-control-container>div.leaflet-bottom.leaflet-left {
+	display: none;
 }
 
+#map>div.leaflet-control-container>div.leaflet-bottom.leaflet-right>div
+	{
+	display: none;
+}
+
+body {
+	overflow-y: hidden;
+}
 </style>
-<link
-	href="<c:url value='/resources/css/bootstrap/bootstrap.min.css' />"
-	rel="stylesheet">
-	<link href="<c:url value='/resources/css/bootstrap.min.css' />"
-		rel="stylesheet">
-		<link href="<c:url value='/resources/css/font-awesome.min.css' />"
-			rel="stylesheet">
-			<link href="<c:url value='/resources/css/prettyPhoto.css' />"
-				rel="stylesheet">
-				<link href="<c:url value='/resources/css/price-range.css' />"
-					rel="stylesheet">
-					<link href="<c:url value='/resources/css/animate.css' />"
-						rel="stylesheet">
-						<link href="<c:url value='/resources/css/main.css' />"
-							rel="stylesheet">
-							<link href="<c:url value='/resources/css/responsive.css' />"
-								rel="stylesheet">
+<title>My Position</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--[if lte IE 8]><script src="<c:url value='/resources/assets/js/ie/html5shiv.js'/>"></script><![endif]-->
+<link rel="stylesheet"
+	href="<c:url value='/resources/assets/css/main.css '/>" />
+<!--[if lte IE 8]><link rel="stylesheet" href="<c:url value='/resources/assets/css/ie8.css '/>"/><![endif]-->
 </head>
 <body>
 
+	<!-- Content -->
+	<div id="content">
+
+		<div id='map' style='width: 100%; height: 100vh;'></div>
 
 
-	<div class="container m-y-lg">
-		<div class="row voffset2">
-		<div class="text-center">
-
-			
-					<form action="SendGPS" method="post">
-						<div class="form-group">
-							<input type="text" placeholder="Id" name="Id" />
-						</div>
-						<div class="form-group">
-							<input type="text" placeholder="Latitude" name="lat" />
-						</div>
-						<div class="form-group">
-							<input type="text" placeholder="Longitude" name="lon" />
-						</div>
-						<div class="form-group">
-							<button type="submit" class="btn btn-default">Envoyer</button>
-						</div>
-					</form>
-				</div>
-</div>
 	</div>
-	
-	
-	
-</body>
 
+	<!-- Sidebar -->
+	<div id="sidebar">
+		<!-- Nav -->
+		<img src="<c:url value='/resources/assets/css/images/logo.PNG'/>"
+			style='display: block; margin-left: auto; margin-right: auto; width: 100px; height: 100px;'
+			alt="" />
+		<nav id="nav">
+		<ul>
+			<li class="current"><a href="">My Position</a></li>
+			<li><a href="MyRoute">My Route</a></li>
+
+		</ul>
+		</nav>
+
+
+
+		<!-- Logo -->
+
+
+
+
+		<!-- Search -->
+		<section class="box">
+		<form method="post" action="SendGPS">
+			<ul>
+				<li><input type="text" placeholder="Id" name="Id" /></li>
+				<ul>
+					<br>
+						<li><input type="text" placeholder="Latitude" name="lat" /></li>
+						<ul>
+							<br>
+								<li><input type="text" placeholder="Longitude" name="lon" />
+							</li>
+							<br> <input type="submit" />
+		</form>
+		</section>
+
+
+
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="<c:url value='/resources/assets/js/jquery.min.js'/>"></script>
+	<script src="<c:url value='/resources/assets/js/skel.min.js'/>"></script>
+	<script src="<c:url value='/resources/assets/js/util.js'/>"></script>
+	<!--[if lte IE 8]><script src="<c:url value='/resources/assets/js/ie/respond.min.js'/>"></script><![endif]-->
+	<script src="<c:url value='/resources/assets/js/main.js'/>"></script>
+	<script type="text/javascript">
+                    window.onload = function() {
+
+                    	var map; 
+        				
+                     
+                        map = L.map('map', {
+                            layers: MQ.mapLayer(),    
+                            center: [44.802895,  -0.610479 ],
+                            zoom: 15
+                        });
+                    	
+                        //var basic = new MQA.Poi({ lat: 44.802895, lng: -0.610479 });
+                       
+                     // add POI to the map's default shape collection
+                     //map.addShape(basic);
+                    
+                 
+                        var popup = L.popup();
+
+                        function onMapClick(e) {
+                            popup
+                                .setLatLng(e.latlng)
+                                .setContent("You clicked the map at " + e.latlng.toString())
+                                .openOn(map);
+                        }
+
+                        map.on('click', onMapClick);
+         
+                
+            }
+            
+        </script>
+</body>
 </html>

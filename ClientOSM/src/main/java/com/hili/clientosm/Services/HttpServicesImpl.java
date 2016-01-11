@@ -10,21 +10,24 @@ import java.util.LinkedList;
 
 
 
-import com.hili.clientosm.Entities.JSONEntitie;
-import com.hili.clientosm.Metier.GPSMetierImpl;
+import com.hili.clientosm.Modele.Entities.JSONEntitie;
+import com.hili.clientosm.Modele.Metier.GPSMetierImpl;
 
 
 public class HttpServicesImpl  implements HttpServices {
 	private int counter;
 	private int maxRoutes;
 	private GPSMetierImpl gpsMetier;
-
+	
+	private static int errorCodeMapQuest;
+	private static int code;
 	public HttpServicesImpl(){
 		gpsMetier =new GPSMetierImpl();
 		counter=0;
 		maxRoutes=0;
 	}
-	
+
+
 
 
 	public int getCounter() {
@@ -33,10 +36,36 @@ public class HttpServicesImpl  implements HttpServices {
 
 
 
+	public static int getCode() {
+		return code;
+	}
+
+
+
+
+	public static void setCode(int code) {
+		HttpServicesImpl.code = code;
+	}
+
+
+
+
 	public void setCounter(int counter) {
 		this.counter = counter;
 	}
 
+
+
+	public  int getErrorCodeMapQuest() {
+		return errorCodeMapQuest;
+	}
+
+
+//
+//	public  void setErrorCodeMapQuest(int errorCodeMapQuest) {
+//		errorCodeMapQuest = errorCodeMapQuest;
+//	}
+//
 
 
 	public int getMaxRoutes() {
@@ -59,12 +88,12 @@ public class HttpServicesImpl  implements HttpServices {
 			final URL obj;
 
 			final String message= gpsMetier.jsonGPSCoordinateToString(jsonEntitie,counter);
-/*
+
 			if(jsonEntitie.getDefaultserver().isEmpty())
-				obj= new URL("http://"+url+":8080/OSM/SendGPS");
-			else obj= new URL("http://"+jsonEntitie.getDefaultserver()+":8080/OSM/SendGPS");
-*/
-			obj= new URL("http://httpbin.org/post");
+				obj= new URL("http://"+url+":8080/SendGPS");
+			else obj= new URL("http://"+jsonEntitie.getDefaultserver()+":8080/SendGPS");
+		//	obj= new URL(url);
+			//obj= new URL(url);
 
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -76,6 +105,7 @@ public class HttpServicesImpl  implements HttpServices {
 			con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
 			String urlParameters = message;
+			//stop AutoRedirect
 			con.setInstanceFollowRedirects(false);
 			// Send post request
 			con.setDoOutput(true);
@@ -83,34 +113,44 @@ public class HttpServicesImpl  implements HttpServices {
 			wr.writeBytes(urlParameters);
 			wr.flush();
 			wr.close();
-			System.out.print("information"+urlParameters);
+			System.out.print("Data envoyé: "+urlParameters);
+			
 			int responseCode = con.getResponseCode();
+			counter=counter+jsonEntitie.getVitesse();
+			code=responseCode;
+			System.out.println(" Response Code : "+ String.valueOf(responseCode));
+			
+			if(responseCode==303||responseCode==200){
+				//Get Response
+				BufferedReader in = new BufferedReader(
+						new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
 
-			System.out.print("Response Code : "+ String.valueOf(responseCode));
-			//Get Response
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				System.out.println("  Response  : "+ response.toString());
+				in.close();         
 
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+
+				
+				if(errorCodeMapQuest==200 && responseCode==303){
+
+					if(gpsMetier.stringToJSON(jsonEntitie,response.toString(),responseCode)==1) {
+						url =jsonEntitie.getDefaultserver();
+						sendPostHttpRequest(jsonEntitie,url);
+					}
+				}
 			}
-
-			in.close();                     
+			
+			else
+				System.out.print(" Error SendHttpRequest "+code+" \n");
 			con.disconnect();
-			
-			
-			System.out.println("  Response  : "+ response.toString());
-			
-			if(gpsMetier.stringToJSON(jsonEntitie,response.toString(),responseCode)==1) {
-				url =jsonEntitie.getDefaultserver();
-				sendPostHttpRequest(jsonEntitie,url);
-			}
-			counter++;
 		}catch (Exception e){
-
-			System.out.print("error sendHttpRequest"+ e.toString()+"\n");
+		
+			System.out.print(" Error SendHttpRequest "+e.getMessage()+"\n");
+			
 		}
 	}
 
@@ -129,24 +169,32 @@ public class HttpServicesImpl  implements HttpServices {
 
 			//add reuqest header
 			con.setRequestMethod("GET");
-			
+
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(con.getInputStream()));
 			String inputLine;
+
 			StringBuffer response = new StringBuffer();
+			 errorCodeMapQuest = con.getResponseCode();
+			
+			if(errorCodeMapQuest==200){
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				con.disconnect();
 
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				return gpsMetier.jsontoLinkedList(response.toString());
 			}
-			in.close();
+			else
+				con.disconnect();
 
-			
-			con.disconnect();
-			
-			return gpsMetier.jsontoLinkedList(response.toString());
+			return new LinkedList<String[]>();
 		}catch (Exception e){
 
-			System.out.print(" error sendHttpRequest"+ e.toString()+"\n");
+			//System.out.print(" error sendHttpGetRequest"+ e.toString()+"\n");
+			//e.getStackTrace();
+			System.out.println("  Can not connect Mapquest (check your proxy) ");
 		}
 		return null;
 	}

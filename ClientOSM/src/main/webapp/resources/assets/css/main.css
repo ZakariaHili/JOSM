@@ -9,6 +9,36 @@
 
 /* Reset */
 
+
+p { 
+  font-size: 13px; 
+  margin: 0; 
+  padding: 0; 
+  line-height: 40px; 
+  color: #fff; 
+  text-shadow: 0 -1px 0 rgba(0,0,0,1); 
+  border-bottom: 1px solid rgba(0,0,0,0.3); 
+  box-shadow: 0 1px 1px rgba(255,255,255,0.2); 
+  letter-spacing: 1px; 
+}
+
+.notification_box { 
+  position: absolute;
+    right: 0;
+    top: 0;
+	display:none;
+  margin: 0 auto; 
+  border-radius: 5px; 
+  background: rgba(0,0,0,0.55);   
+   
+  text-align: center; 
+  box-shadow: 0 0 5px rgba(0,0,0,0.5), 0 2px 2px rgba(0,0,0,0.1);
+  }
+.inner { 
+  width: 300px; 
+  height: 30px; 
+  }
+
 	html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
 		margin: 0;
 		padding: 0;
@@ -2221,7 +2251,7 @@
 		color: rgba(255, 255, 255, 0.55);
 		text-shadow: -1px -1px 0px rgba(0, 0, 0, 0.5);
 		width: 14em;
-		padding: 3em 1.35em 1em 1.15em;
+		padding: 0em 1.35em 1em 1.15em;
 		background: #364050 url("images/bg01.png");
 		overflow-y: auto;
 		left: 0;
@@ -2234,7 +2264,7 @@
 
 		#sidebar section, #sidebar nav {
 			position: relative;
-			margin: 2em 0 0 0;
+			margin: 0em 0 0 0;
 			font-size: 0.9em;
 		}
 
@@ -2497,7 +2527,7 @@
 
 			.box.post header {
 				padding: 2.75em 0 0 0;
-				margin: 0 0 3em 0;
+				margin: 0 0 2em 0;
 			}
 
 				.box.post header > p {
@@ -2579,8 +2609,8 @@
 		/* Content */
 
 			#content {
-				padding: 3em 5em 8em 5em;
-				margin-left: 21em;
+				padding: 0em 0em 0em 4em;
+				margin-left: 10em;
 			}
 
 	}
@@ -2689,7 +2719,7 @@
 		/* Nav */
 
 			#nav {
-				margin-top: 0 !important;
+				margin-top: -2em !important;
 			}
 
 				#nav:before {

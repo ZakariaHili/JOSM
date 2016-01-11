@@ -8,85 +8,111 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html">
 <head>
-<link
-	href="<c:url value='/resources/css/bootstrap/bootstrap.min.css' />"
-	rel="stylesheet">
-	<link href="<c:url value='/resources/css/bootstrap.min.css' />"
-		rel="stylesheet">
-		<link href="<c:url value='/resources/css/font-awesome.min.css' />"
-			rel="stylesheet">
-			<link href="<c:url value='/resources/css/prettyPhoto.css' />"
-				rel="stylesheet">
-				<link href="<c:url value='/resources/css/price-range.css' />"
-					rel="stylesheet">
-					<link href="<c:url value='/resources/css/animate.css' />"
-						rel="stylesheet">
-						<link href="<c:url value='/resources/css/main.css' />"
-							rel="stylesheet">
-							<link href="<c:url value='/resources/css/responsive.css' />"
-								rel="stylesheet">
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css" />
+	href="<c:url value='/resources/leaflet.css'/>" />
 
 <script
-	src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+	src="<c:url value='/resources/leaflet.js'/>"></script>
 <script
 	src="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-map.js?key=Kmjtd%7Cluua2qu7n9%2C7a%3Do5-lzbgq"></script>
 <script
 	src="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-routing.js?key=Kmjtd%7Cluua2qu7n9%2C7a%3Do5-lzbgq"></script>
 
-<style media="screen" type="text/css">
-
-.margin{
+<link rel="shortcut icon"
+ href="<c:url value='/resources/favicon.ico'/>"   type="image/x-icon"/>
  
- margin-left: 10%;
-  
+ <link rel="icon" href="<c:url value='/resources/favicon.ico'/>" type="image/x-icon">
+
+<style type="">
+#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-left{
+display: none;
+}
+#map > div.leaflet-control-container > div.leaflet-bottom.leaflet-right > div{
+
+display:none;}
+body {
+    overflow-y:hidden;
 }
 
 </style>
-<title>Mes Coordonnées</title>
+<title>My Route</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--[if lte IE 8]><script src="<c:url value='/resources/assets/js/ie/html5shiv.js'/>"></script><![endif]-->
+<link rel="stylesheet"
+	href="<c:url value='/resources/assets/css/main.css '/>" />
+<!--[if lte IE 8]><link rel="stylesheet" href="<c:url value='/resources/assets/css/ie8.css '/>"/><![endif]-->
 </head>
 <body>
-	<div class="container-fluid">
-		<div class="row voffset2">
-			<div class="col-md-1">
-				<form action="MakeRoute" method="post">
-					<div class="form-group">
-						<input type="text" placeholder="Id" name="Id" />
-					</div>
-					from:
-					<div class="form-group">
-						<input type="text" placeholder="Latitude" name="lat1" />
-					</div>
-					<div class="form-group">
-						<input type="text" placeholder="Longitude" name="lon1" />
-					</div>
-					to:
-					<div class="form-group">
-						<input type="text" placeholder="Latitude" name="lat2" />
-					</div>
-					<div class="form-group">
-						<input type="text" placeholder="Longitude" name="lon2" />
-					</div>
-					<div class="form-group">
-						<button type="submit" class="btn btn-default">Envoyer</button>
-					</div>
-				</form>
-				
-			</div>
-		<div class="col-md-9">	
-<div class="margin"  id='map' style='width: 100%; height: 530px;'></div>
-		</div>
-		</div>
+
+	<!-- Content -->
+	<div id="content">
+
+		<div id='map' style='width: 100%; height: 100vh;'></div>
+
+
 	</div>
 
+	<!-- Sidebar -->
+	<div id="sidebar">
+		<!-- Nav -->
+		<img src="<c:url value='/resources/assets/css/images/logo.PNG'/>" style='display: block;
+    margin-left: auto;
+    margin-right: auto;
+     width: 100px; height: 100px;' alt="" />
+		<nav id="nav">
+		<ul>
+			<li ><a href="MyPosition">My Position</a></li>
+			<li class="current"><a href="MyRoute">My Route</a></li>
+
+		</ul>
+		</nav>
+
+
+
+		<!-- Logo -->
 
 
 
 
-</body>
-<script type="text/javascript">
+		<!-- Search -->
+		<section class="box">
+		<form method="post" action="MakeRoute">
+			
+				<input type="text" placeholder="Id" name="Id" />
+					
+					from:
+					
+						<input type="text" placeholder="Latitude" name="lat1" />
+					<br>
+						<input type="text" placeholder="Longitude" name="lon1" />
+					
+					to:
+					
+						<input type="text" placeholder="Latitude" name="lat2" />
+					<br>
+						<input type="text" placeholder="Longitude" name="lon2" />
+						
+						<br>
+								
+									<input  type="submit" />
+								
+							
+		</form>
+		</section>
+
+
+
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="<c:url value='/resources/assets/js/jquery.min.js'/>"></script>
+	<script src="<c:url value='/resources/assets/js/skel.min.js'/>"></script>
+	<script src="<c:url value='/resources/assets/js/util.js'/>"></script>
+	<!--[if lte IE 8]><script src="<c:url value='/resources/assets/js/ie/respond.min.js'/>"></script><![endif]-->
+	<script src="<c:url value='/resources/assets/js/main.js'/>"></script>
+	<script type="text/javascript">
                     window.onload = function() {
 
                     	var map; 
@@ -97,11 +123,23 @@
                             center: [44.802895,  -0.610479 ],
                             zoom: 15
                         });
-                        var basic = new MQA.Poi({ lat: 44.802895, lng: -0.610479 });
+                        
+                        //var basic = new MQA.Poi({ lat: 44.802895, lng: -0.610479 });
                        
                      // add POI to the map's default shape collection
-                     map.addShape(basic);
-                    
+                     //map.addShape(basic);
+                     
+
+                        var popup = L.popup();
+
+                        function onMapClick(e) {
+                            popup
+                                .setLatLng(e.latlng)
+                                .setContent("You clicked the map at " + e.latlng.toString())
+                                .openOn(map);
+                        }
+
+                        map.on('click', onMapClick);
                  
             
          
@@ -109,5 +147,5 @@
             }
             
         </script>
-
+</body>
 </html>
