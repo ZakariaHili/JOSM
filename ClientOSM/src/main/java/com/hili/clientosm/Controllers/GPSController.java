@@ -24,7 +24,7 @@ import com.hili.clientosm.Services.HttprequestThread;
 @Controller
 public class GPSController {
 
-	public static String defaultServer="http://httpbin.org/post";//172.20.0.69";//192.168.23.123"; //10.42.0.71";//"https://httpbin.org/post";
+	public static String defaultServer="172.20.0.45";//172.20.0.69";//192.168.23.123"; //10.42.0.71";//"https://httpbin.org/post";
 	private GPSMetierImpl gps ;
 	
 	private HttprequestThread httprequest ;
@@ -71,8 +71,11 @@ public class GPSController {
 				request.getParameter("lon2"));
 		
 		positions.clear();
-		
+		try{
 		positions=httprequest.getHttpServices().sendGetHttpRequest(url);
+		}catch(Exception e){
+			System.out.println("Can't generate positions: line 75 in Controller MakeRoute");
+		}
 		httprequest.getHttpServices().setCounter(0);
 		
 		for(int i=0;i<json.getVitesse();i++)
@@ -93,22 +96,25 @@ public class GPSController {
 		
 		
 		
-
+		
 
 		try {
+		while(httprequest.isRunning()==true) {
 			httprequest.arret();
+			Thread.sleep(100);
+		}
 			httprequest.setAll(json,defaultServer,json.getPositions().size());
-			while(httprequest.getHttpServices().getErrorCodeMapQuest()==0) Thread.sleep(1);
+			while(httprequest.getHttpServices().getErrorCodeMapQuest()==0) Thread.sleep(100);
 			codeMapQuest=httprequest.getHttpServices().getErrorCodeMapQuest();
 			
 			model.addAttribute("CodeMapQuest",codeMapQuest);
 			
 			
 			httprequest.demarrer();
-
+		
 			httprequest.start();
 		}catch (Exception e){
-			System.out.println("Error"+ e.toString());
+			System.out.println("MakeRoute");
 		}
 
 		
@@ -167,6 +173,7 @@ public class GPSController {
 	String getNewPosition() {
 		if(httprequest.isRunning()){
 			String [] position;
+			try{
 			if(httprequest.getHttpServices().getCounter()<json.getPositions().size()-1){
 
 				position = json.getPositions().get(httprequest.getHttpServices().getCounter());		
@@ -181,7 +188,10 @@ public class GPSController {
 					position = json.getPositions().get(json.getPositions().size()-1);	
 				httprequest.arret();}
 			}
-
+			}catch(Exception e){
+				System.out.println("We can't get new position");
+				position = json.getPositions().get(0);
+			}
 
 
 			return "{\"position\":["+position[0]+","+position[1]+"]}";}

@@ -61,11 +61,10 @@ public class HttpServicesImpl  implements HttpServices {
 	}
 
 
-//
-//	public  void setErrorCodeMapQuest(int errorCodeMapQuest) {
-//		errorCodeMapQuest = errorCodeMapQuest;
-//	}
-//
+
+	public static void setErrorCodeMapQuest(int CodeMapQuest) {
+		errorCodeMapQuest =CodeMapQuest;	}
+
 
 
 	public int getMaxRoutes() {

@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.hili.clientosm.Modele.Entities.JSONEntitie;
+import com.hili.clientosm.Services.HttpServicesImpl;
 
 /**
  * Created by HILI on 05/11/2015.
@@ -147,6 +148,7 @@ public class GPSMetierImpl implements  GPSMetier {
 				i++;
 			}
 			}catch(Exception e){
+				HttpServicesImpl.setErrorCodeMapQuest(404);
 				System.out.println("JSONObject[shape] not found. => No Route found");
 			}
 			return list;

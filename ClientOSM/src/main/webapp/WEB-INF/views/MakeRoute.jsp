@@ -67,9 +67,9 @@ body {
 
                 iconSize:     [60, 60], // size of the icon
                 shadowSize:   [0, 0], // size of the shadow
-                iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+                iconAnchor:   [30,60], // point of the icon which will correspond to marker's location
                 shadowAnchor: [4, 62],  // the same for the shadow
-                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                popupAnchor:  [0, -60] // point from which the popup should open relative to the iconAnchor
             });
 			</script>
 
@@ -131,7 +131,7 @@ body {
 					
 						<input type="text" value="<%=lat2%>" name="lat2" />
 					<br>
-						<input type="text" value="<%=lon1%>" name="lon2" />
+						<input type="text" value="<%=lon2%>" name="lon2" />
 						<br>
 								
 									<input  type="submit" />
