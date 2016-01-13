@@ -1,4 +1,10 @@
-vehicle simulator for OSM Sekai :https://github.com/rsabir/josm
+# vehicle simulator for Sekai 
+ https://github.com/rsabir/josm
+
+The purpose of this project is to simulate a vehicle for the project distributed geolocalisation system Sekai.
+This project can also be handful to develop a client for Sekai.
+
+***This project is totaly open source and is liscenced under MIT Liscence, which means you can use it freely and without restriction. We will be very glad to receive your contribution.***
 
 ##Installation:
 
