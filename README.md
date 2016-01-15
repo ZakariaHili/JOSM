@@ -16,7 +16,7 @@ Before installing the vehicle simulator, you’ll need to install  JRE  or JDK ,
 ```
 To install Sekai please refer to the following git:
 
-> https://github.com/rsabir/josm
+> https://github.com/rsabir/Sekai
 
 After that, you need to get client.war in the drive or generate it with the sources present in the git.
 Here is the Drive containing the war file :
