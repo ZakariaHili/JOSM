@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="JSONEntitie" class="com.hili.clientosm.Modele.Entities.JSONEntitie"></bean>
+	<bean id="JSONEntitieDAO" class="com.hili.clientosm.Modele.Dao.JSONEntitieDAOImpl"></bean>
+	<bean id="SettingDAO" class="com.hili.clientosm.Modele.Dao.SettingsDaoImpl"></bean>
+	<bean id="GPSMetier" class="com.hili.clientosm.Modele.Metier.GPSMetierImpl">
+		<property name="jsonEntitieDAO" ref="JSONEntitieDAO"></property>
+		<property name="settingsDao" ref="SettingDAO"></property>
+	</bean>
+	<bean id="APIMetier" class="com.hili.clientosm.Modele.Metier.APIMetierImpl"></bean>
+	<bean id="HttpServices" class="com.hili.clientosm.Services.HttpServicesImpl">
+	<property name="gpsMetier" ref="GPSMetier" ></property>
+	<property name="apiMetier" ref="APIMetier"></property>
+	</bean>
+	
+	<bean id="HttprequestThread" class="com.hili.clientosm.Services.HttprequestThreadImpl">
+	<property name="httpServices" ref="HttpServices"></property>
+	</bean>
+	
+</beans>
