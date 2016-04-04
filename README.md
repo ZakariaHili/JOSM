@@ -34,4 +34,4 @@ After that, you have to configure your default server http://localhost:port/Conf
 
 Then you can use the vehicle simulator with http://localhost:port/
 
-if you have any problem please contact us by zakariahili@gmail.com
+if you have any problem please contact us by zakariahili At gmail.com
